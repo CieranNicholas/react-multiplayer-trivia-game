@@ -1,0 +1,29 @@
+.board {
+  height: 500px;
+  width: 500px;
+  background-color: rgb(26, 26, 26);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  grid-gap: 1px;
+  place-items: center;
+}
+
+.tile {
+  height: 100%;
+  width: 100%;
+  border: solid white 1px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  place-items: center;
+}
+
+.player {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  background-color: rgb(210, 80, 80);
+}
