@@ -10,7 +10,6 @@ import {
   defaulSocketContextState,
 } from "./Context";
 import { useSocket } from "../../hooks/useSocket";
-import { useFetcher } from "react-router-dom";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -25,7 +24,7 @@ const SocketContextComponent: React.FunctionComponent<
   );
   const [loading, setLoading] = useState(true);
 
-  const socket = useSocket("ws://localhost:1337", {
+  const socket = useSocket("ws://localhost:6969", {
     reconnectionAttempts: 5,
     reconnectionDelay: 5000,
     autoConnect: false,

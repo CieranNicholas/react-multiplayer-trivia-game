@@ -1,6 +1,7 @@
 import { Server as HttpServer } from "http";
 import { Socket, Server } from "socket.io";
 import { v4 } from "uuid";
+import { Game, games } from "./game";
 
 export class ServerSocket {
   public static instance: ServerSocket;
@@ -39,9 +40,10 @@ export class ServerSocket {
         const reconnected = Object.values(this.users).includes(socket.id);
 
         if (reconnected) {
+          console.info("This user has reconnected.");
+
           const uid = this.GetUidFromSocketId(socket.id);
           const users = Object.values(this.users);
-          console.info(`${uid} has reconnected`);
 
           if (uid) {
             console.info(`Sending callback for reconnect ...`);
@@ -53,8 +55,8 @@ export class ServerSocket {
         // Generate new user
         const uid = v4();
         this.users[uid] = socket.id;
-        const users = Object.values(this.users);
 
+        const users = Object.values(this.users);
         console.info(`Sending callback for handshake ...`);
         callback(uid, users);
 
@@ -68,20 +70,35 @@ export class ServerSocket {
     );
 
     socket.on("disconnect", () => {
-      console.info(`${socket.id} disconnected.`);
+      console.info(`Disconnect received from: ${socket.id}`);
 
       const uid = this.GetUidFromSocketId(socket.id);
 
       if (uid) {
         delete this.users[uid];
         const users = Object.values(this.users);
-        this.SendMessage("user_disconnected", users, uid);
+        this.SendMessage("user_disconnected", users, socket.id);
+      }
+    });
+
+    socket.on("create_game", (name, callback: (lobby_id: string) => void) => {
+      const id = v4();
+      new Game(name, id);
+      callback(id);
+    });
+
+    socket.on("join_game", (game_id, callback: (success: boolean) => void) => {
+      if (game_id in games) {
+        socket.join(game_id);
+        callback(true);
+      } else {
+        callback(false);
       }
     });
   };
 
   GetUidFromSocketId = (id: string) => {
-    return Object.keys(this.users).find((uid) => this.users[id] === id);
+    return Object.keys(this.users).find((uid) => this.users[uid] === id);
   };
 
   /**

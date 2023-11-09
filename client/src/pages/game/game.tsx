@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import { PlayerType } from "../../types";
 
 import { useParams } from "react-router-dom";
+
+import SocketContext from "../../contexts/Socket/Context";
 
 import "./game.css";
 
 import Board from "../../Components/Board/Board";
 
 const Game = () => {
-  const [playerData, setPlayerData] = useState<PlayerType[]>([]);
+  const { socket } = useContext(SocketContext).SocketState;
 
-  const [isConnected, setIsConnected] = useState(false);
+  const [conntected, setConnected] = useState(false);
+  const [playerData, setPlayerData] = useState<PlayerType[]>([]);
 
   const params = useParams();
   const { lobby } = params;
@@ -36,19 +39,22 @@ const Game = () => {
         tile: 1,
       },
     ]);
+
+    socket?.emit("join_game", lobby, (success: boolean) => {
+      console.log(success, "yaba");
+      setConnected(success);
+    });
   }, []);
 
-  return (
-    <>
-      {isConnected ? (
-        <Board playerData={playerData} />
-      ) : (
-        <>
-          <h1>Connecting . . .</h1>
-        </>
-      )}
-    </>
-  );
+  if (lobby) {
+    if (conntected) {
+      return <Board playerData={playerData} />;
+    } else {
+      return <h1>Connecting . . .</h1>;
+    }
+  } else {
+    return <h1>Lobby not found . . .</h1>;
+  }
 };
 
 export default Game;

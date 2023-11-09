@@ -66,4 +66,4 @@ application.use((req, res, next) => {
 });
 
 /** Listen */
-httpServer.listen(1337, () => console.info(`Server is running`));
+httpServer.listen(6969, () => console.info(`Server is running`));
